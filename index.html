@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphique en Barres SVG</title>
+    <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', (event) => {
+  const mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+  const ventes = [6500, 5550, 4200, 4525, 2500, 1500, 500, 1000, 1750, 2300, 3700, 3500];
+  
+  const svgNS = "http://www.w3.org/2000/svg";
+  const barWidth = 50;
+  const barSpacing = 10; 
+  
+  const chartWidth = ventes.length * (barWidth + barSpacing) + 60; 
+  const chartHeight = 500; 
+  let svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("width", chartWidth);
+  svg.setAttribute("height", chartHeight);
+  svg.setAttribute("viewBox", `0 0 ${chartWidth} ${chartHeight}`);
+  document.body.appendChild(svg);
+  
+  let title = document.createElementNS(svgNS, "text");
+  title.setAttribute("x", chartWidth / 2);
+  title.setAttribute("y", 40);
+  title.setAttribute("text-anchor", "middle");
+  title.setAttribute("font-size", "24px");
+  title.textContent = "Ventes 2023";
+  svg.appendChild(title);
+    
+  const maxVente = Math.max(...ventes);
+  const roundUpMaxVente = Math.ceil(maxVente / 1000) * 1000;
+  const scaleY = (value) => (chartHeight - 120) * (value / roundUpMaxVente);
+  
+  for(let i = 0; i <= roundUpMaxVente; i += 1000) {
+    let scaleText = document.createElementNS(svgNS, "text");
+    scaleText.setAttribute("x", 30); 
+    scaleText.setAttribute("y", chartHeight - 80 - scaleY(i));
+    scaleText.setAttribute("text-anchor", "end");
+    scaleText.setAttribute("font-size", "14px");
+    scaleText.textContent = i.toString();
+    svg.appendChild(scaleText);
+  }
+  
+  ventes.forEach((vente, index) => {
+    let barWidth = 50;
+    const barSpacing = 10;
+    const chartWidth = ventes.length * (barWidth + barSpacing) + 60; 
+
+    let barHeight = scaleY(vente);
+    let bar = document.createElementNS(svgNS, "rect");
+    bar.setAttribute("x", index * barWidth + 60); 
+    bar.setAttribute("y", chartHeight - barHeight - 80);
+    bar.setAttribute("width", barWidth * 0.8);
+    bar.setAttribute("height", barHeight);
+    bar.setAttribute("fill", vente > 4500 ? "green" : (vente > 3000 ? "yellow" : (vente > 1500 ? "orange" : "red")));
+    bar.setAttribute("stroke", "black");    
+    bar.setAttribute("stroke-width", "2");
+    svg.appendChild(bar);
+    
+    let text = document.createElementNS(svgNS, "text");
+    text.setAttribute("x", index * barWidth + barWidth * 0.4 + 60); 
+    text.setAttribute("y", chartHeight - barHeight - 85);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("font-size", "14px");
+    text.textContent = `$${vente}`;
+    svg.appendChild(text);
+  });
+  
+  mois.forEach((moi, index) => {
+  let text = document.createElementNS(svgNS, "text");
+  let barX = index * (barWidth) + 95; 
+  let centeredBarX = barX + (barWidth * 0.8) / 2; 
+  text.setAttribute("x", centeredBarX); 
+  text.setAttribute("y", chartHeight - 60);
+  text.setAttribute("text-anchor", "end"); 
+  text.setAttribute("font-size", "14px");
+
+  text.setAttribute("transform", `rotate(-45, ${centeredBarX}, ${chartHeight - 20})`);
+
+  text.textContent = moi;
+  svg.appendChild(text);
+});
+
+});
+    </script>
+</head>
+<body>
+</body>
+</html>
